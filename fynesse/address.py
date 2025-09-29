@@ -27,6 +27,9 @@ from sklearn.metrics import (
 )
 from sklearn.naive_bayes import GaussianNB
 from itertools import cycle
+import geopandas as gpd
+import matplotlib.patches as mpatches
+import contextily as ctx
 
 # Set up logging
 logger = logging.getLogger(__name__)
@@ -258,4 +261,61 @@ def plot_roc_curve(
     plt.ylabel("True Positive Rate")
     plt.title(f"ROC Curve - {model_name} (Overall AUC = {global_auc:.2f})")
     plt.legend(loc="lower right")
+    plt.show()
+
+
+def visual_predictions(
+    gdf_counties,
+    X_test,
+    y_test,
+    y_pred,
+    basemap=ctx.providers.OpenStreetMap.Mapnik,
+    zoom=7,
+):
+    results_df = pd.DataFrame(
+        {"County": X_test.index, "True_Label": y_test.values, "Predicted": y_pred}
+    )
+    results_df["Misclassified"] = results_df["True_Label"] != results_df["Predicted"]
+    map_data = gdf_counties.merge(results_df, on="County", how="left")
+
+    map_data = map_data.to_crs(epsg=3857)
+    gdf_counties = gdf_counties.to_crs(epsg=3857)
+
+    fig, axes = plt.subplots(1, 2, figsize=(20, 15))
+
+    gdf_counties.boundary.plot(ax=axes[0], color="black", linewidth=0.5)
+    map_data[map_data["True_Label"] == 1].plot(
+        ax=axes[0], color="red", edgecolor="black", linewidth=0.5
+    )
+    map_data[map_data["True_Label"] == 0].plot(
+        ax=axes[0], color="green", edgecolor="black", linewidth=0.5
+    )
+    axes[0].set_title("Ground Truth (y_test)", fontsize=16)
+    ctx.add_basemap(axes[0], source=basemap, zoom=zoom)
+
+    gdf_counties.boundary.plot(ax=axes[1], color="black", linewidth=0.5)
+    map_data[map_data["Predicted"] == 1].plot(
+        ax=axes[1], color="red", edgecolor="black", linewidth=0.5
+    )
+    map_data[map_data["Predicted"] == 0].plot(
+        ax=axes[1], color="green", edgecolor="black", linewidth=0.5
+    )
+
+    map_data[map_data["Misclassified"]].plot(
+        ax=axes[1], facecolor="none", edgecolor="yellow", linewidth=2, hatch="///"
+    )
+    axes[1].set_title("Model Predictions (y_pred)", fontsize=16)
+    ctx.add_basemap(axes[1], source=basemap, zoom=zoom)
+
+    legend_handles = [
+        mpatches.Patch(color="red", label="Underserved"),
+        mpatches.Patch(color="green", label="Well-served"),
+        mpatches.Patch(
+            facecolor="none", edgecolor="yellow", hatch="///", label="Misclassified"
+        ),
+    ]
+    for ax in axes:
+        ax.legend(handles=legend_handles, loc="lower left")
+
+    plt.tight_layout()
     plt.show()
