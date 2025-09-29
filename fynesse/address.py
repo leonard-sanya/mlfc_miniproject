@@ -334,6 +334,12 @@ def plot_roc_curve(
 # import matplotlib.patches as mpatches
 # import contextily as ctx  # basemap provider
 
+# import pandas as pd
+# import geopandas as gpd
+# import matplotlib.pyplot as plt
+# import matplotlib.patches as mpatches
+# import contextily as ctx
+
 
 def visual_predictions(
     gdf_counties,
@@ -349,10 +355,10 @@ def visual_predictions(
     )
     results_df["Misclassified"] = results_df["True_Label"] != results_df["Predicted"]
 
-    # Step 2: Merge with shapefile
+    # Step 2: Merge with shapefile (all counties included)
     map_data = gdf_counties.merge(results_df, on="County", how="left")
 
-    # 🔑 Fix: ensure Misclassified is clean boolean (no NaN, no object dtype)
+    # Handle NaN after merge: counties not in test set
     map_data["Misclassified"] = map_data["Misclassified"].fillna(False).astype(bool)
 
     # Step 3: Reproject for basemap
@@ -370,6 +376,7 @@ def visual_predictions(
     map_data[map_data["True_Label"] == 0].plot(
         ax=axes[0], color="green", edgecolor="black", linewidth=0.5
     )
+
     axes[0].set_title("Ground Truth (y_test)", fontsize=16)
     ctx.add_basemap(axes[0], source=basemap, zoom=zoom)
 
@@ -382,9 +389,13 @@ def visual_predictions(
         ax=axes[1], color="green", edgecolor="black", linewidth=0.5
     )
 
-    # Highlight misclassified
-    map_data.loc[map_data["Misclassified"]].plot(
-        ax=axes[1], facecolor="none", edgecolor="yellow", linewidth=2, hatch="///"
+    # Highlight misclassified test counties
+    map_data[map_data["Misclassified"]].plot(
+        ax=axes[1],
+        facecolor="none",
+        edgecolor="yellow",
+        linewidth=2,
+        hatch="///",
     )
 
     axes[1].set_title("Model Predictions (y_pred)", fontsize=16)
@@ -392,10 +403,13 @@ def visual_predictions(
 
     # -------- Custom Legend --------
     legend_handles = [
-        mpatches.Patch(color="red", label="Underserved"),
-        mpatches.Patch(color="green", label="Well-served"),
+        mpatches.Patch(color="red", label="Underserved (1)"),
+        mpatches.Patch(color="green", label="Well-served (0)"),
         mpatches.Patch(
-            facecolor="none", edgecolor="yellow", hatch="///", label="Misclassified"
+            facecolor="none",
+            edgecolor="yellow",
+            hatch="///",
+            label="Misclassified",
         ),
     ]
     for ax in axes:
