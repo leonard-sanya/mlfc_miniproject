@@ -288,10 +288,10 @@ def visual_predictions(
     # --- Ground Truth ---
     gdf_counties.boundary.plot(ax=axes[0], color="black", linewidth=0.5)
     map_data.loc[map_data["True_Label"].fillna(-1) == 1].plot(
-        ax=axes[0], color="red", edgecolor="black", linewidth=0.5
+        ax=axes[0], color="green", edgecolor="black", linewidth=0.5
     )
     map_data.loc[map_data["True_Label"].fillna(-1) == 0].plot(
-        ax=axes[0], color="green", edgecolor="black", linewidth=0.5
+        ax=axes[0], color="red", edgecolor="black", linewidth=0.5
     )
     axes[0].set_title("Ground Truth (y_test)", fontsize=16)
     ctx.add_basemap(axes[0], source=basemap, zoom=zoom)
@@ -299,10 +299,10 @@ def visual_predictions(
     # --- Predictions ---
     gdf_counties.boundary.plot(ax=axes[1], color="black", linewidth=0.5)
     map_data.loc[map_data["Predicted"].fillna(-1) == 1].plot(
-        ax=axes[1], color="red", edgecolor="black", linewidth=0.5
+        ax=axes[1], color="green", edgecolor="black", linewidth=0.5
     )
     map_data.loc[map_data["Predicted"].fillna(-1) == 0].plot(
-        ax=axes[1], color="green", edgecolor="black", linewidth=0.5
+        ax=axes[1], color="red", edgecolor="black", linewidth=0.5
     )
 
     # Highlight misclassified (drop NaN before masking)
