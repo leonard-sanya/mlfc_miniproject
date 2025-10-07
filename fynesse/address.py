@@ -377,7 +377,7 @@ def visual_predictions(
         ax=axes[0], color="green", edgecolor="black", linewidth=0.5
     )
 
-    axes[0].set_title("Ground Truth (y_test)", fontsize=16)
+    axes[0].set_title("Ground Truth", fontsize=16)
     ctx.add_basemap(axes[0], source=basemap, zoom=zoom)
 
     # -------- Predictions --------
@@ -398,7 +398,7 @@ def visual_predictions(
         hatch="///",
     )
 
-    axes[1].set_title("Model Predictions (y_pred)", fontsize=16)
+    axes[1].set_title("Model Predictions", fontsize=16)
     ctx.add_basemap(axes[1], source=basemap, zoom=zoom)
 
     # -------- Custom Legend --------
