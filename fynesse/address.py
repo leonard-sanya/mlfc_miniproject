@@ -370,10 +370,10 @@ def visual_predictions(
 
     # -------- Ground Truth --------
     gdf_counties.boundary.plot(ax=axes[0], color="black", linewidth=0.5)
-    map_data[map_data["True_Label"] == 1].plot(
+    map_data[map_data["True_Label"] == 0].plot(
         ax=axes[0], color="red", edgecolor="black", linewidth=0.5
     )
-    map_data[map_data["True_Label"] == 0].plot(
+    map_data[map_data["True_Label"] == 1].plot(
         ax=axes[0], color="green", edgecolor="black", linewidth=0.5
     )
 
@@ -382,10 +382,10 @@ def visual_predictions(
 
     # -------- Predictions --------
     gdf_counties.boundary.plot(ax=axes[1], color="black", linewidth=0.5)
-    map_data[map_data["Predicted"] == 1].plot(
+    map_data[map_data["Predicted"] == 0].plot(
         ax=axes[1], color="red", edgecolor="black", linewidth=0.5
     )
-    map_data[map_data["Predicted"] == 0].plot(
+    map_data[map_data["Predicted"] == 1].plot(
         ax=axes[1], color="green", edgecolor="black", linewidth=0.5
     )
 
@@ -403,8 +403,8 @@ def visual_predictions(
 
     # -------- Custom Legend --------
     legend_handles = [
-        mpatches.Patch(color="red", label="Underserved (1)"),
-        mpatches.Patch(color="green", label="Well-served (0)"),
+        mpatches.Patch(color="red", label="Underserved"),
+        mpatches.Patch(color="green", label="Well-served"),
         mpatches.Patch(
             facecolor="none",
             edgecolor="yellow",
