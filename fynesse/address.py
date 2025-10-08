@@ -263,6 +263,8 @@ def visual_predictions(
     basemap=ctx.providers.OpenStreetMap.Mapnik,
     zoom=7,
 ):
+    if isinstance(y_pred, pd.DataFrame):
+        y_pred = y_pred.iloc[:, -1]
     # Step 1: Build results DataFrame
     results_df = pd.DataFrame(
         {
