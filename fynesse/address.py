@@ -133,39 +133,11 @@ def train_logistic_classifier(
     return clf
 
 
-# def evaluate_underserved_classifier(
-#     clf: Pipeline, X_test: pd.DataFrame, y_test: pd.Series, zero_division: int = 0
-# ) -> pd.Series:
-#     """
-#     Predicts and prints a classification report.
-
-
-#     Returns:
-#         pd.Series: Predicted labels.
-#     """
-#     y_pred = clf.predict(X_test)
-#     print(classification_report(y_test, y_pred, zero_division=zero_division))
-#     return pd.Series(y_pred)
 def evaluate_logistic_classifier(
     clf: Pipeline, X_test: pd.DataFrame, y_test: pd.Series, zero_division: int = 0
 ) -> pd.Series:
-    """
-    Predicts and prints a classification report, returning predictions
-    indexed the same way as y_test.
-
-    Args:
-        clf (Pipeline): Trained classifier.
-        X_test (pd.DataFrame): Test features.
-        y_test (pd.Series): True labels with meaningful index.
-        zero_division (int): Handling for division by zero in metrics.
-
-    Returns:
-        pd.Series: Predicted labels with the same index as y_test.
-    """
     y_pred = clf.predict(X_test)
     print(classification_report(y_test, y_pred, zero_division=zero_division))
-
-    # Ensure the output series keeps the same index as y_test
     return pd.Series(y_pred, index=y_test.index, name="Predicted")
 
 
@@ -175,9 +147,6 @@ def plot_underserved_confusion_matrix(
     labels: Optional[List[str]] = None,
     title: str = "Confusion Matrix",
 ) -> None:
-    """
-    Plots the confusion matrix for given true and predicted labels.
-    """
     cm = confusion_matrix(y_true, y_pred, labels=labels)
 
     disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=labels)
@@ -296,7 +265,11 @@ def visual_predictions(
 ):
     # Step 1: Build results DataFrame
     results_df = pd.DataFrame(
-        {"County": X_test.index, "True_Label": y_test.values, "Predicted": y_pred}
+        {
+            "County": X_test.index,
+            "True_Label": y_test.values,
+            "Predicted": y_pred.values,
+        }
     )
     results_df["Misclassified"] = results_df["True_Label"] != results_df["Predicted"]
 
